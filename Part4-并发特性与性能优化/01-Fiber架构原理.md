@@ -7,6 +7,7 @@
 Fiber是React 16引入的全新协调（Reconciliation）引擎架构，是React核心算法的完全重写。Fiber使React能够将渲染工作分割成多个小块，并在多个帧之间分配渲染工作，从而实现可中断的渲染过程。
 
 **核心特点：**
+
 - 可中断的渲染
 - 优先级调度
 - 增量渲染
@@ -50,6 +51,7 @@ function HeavyComponent() {
 ```
 
 **React 15存在的问题：**
+
 1. 长时间占用主线程，导致页面卡顿
 2. 用户输入响应延迟
 3. 动画掉帧
@@ -63,6 +65,7 @@ Fiber架构的核心目标是实现增量渲染，将渲染工作分解成块，
 **主要目标：**
 
 1. **暂停工作，稍后再回来**
+
 ```javascript
 // 伪代码展示Fiber的工作方式
 function workLoop(deadline) {
@@ -81,6 +84,7 @@ function workLoop(deadline) {
 ```
 
 2. **为不同类型的工作分配优先级**
+
 ```javascript
 // 优先级示例
 const priorities = {
@@ -93,6 +97,7 @@ const priorities = {
 ```
 
 3. **复用之前完成的工作**
+
 ```javascript
 // Fiber可以复用之前的工作结果
 function reconcileChildren(fiber, children) {
@@ -100,7 +105,7 @@ function reconcileChildren(fiber, children) {
   
   for (let i = 0; i < children.length; i++) {
     const element = children[i];
-    
+  
     if (oldFiber && oldFiber.type === element.type) {
       // 复用现有Fiber
       newFiber = {
@@ -112,13 +117,14 @@ function reconcileChildren(fiber, children) {
       // 创建新Fiber
       newFiber = createFiber(element);
     }
-    
+  
     oldFiber = oldFiber?.sibling;
   }
 }
 ```
 
 4. **如果不再需要，可以中止工作**
+
 ```javascript
 // 高优先级任务可以打断低优先级任务
 function commitRoot() {
@@ -168,7 +174,7 @@ class FiberReconciler {
         this.nextUnitOfWork
       );
     }
-    
+  
     if (this.nextUnitOfWork) {
       // 下一帧继续
       requestIdleCallback(this.workLoop);
@@ -181,12 +187,12 @@ class FiberReconciler {
   performUnitOfWork(fiber) {
     // 1. 处理当前Fiber
     this.beginWork(fiber);
-    
+  
     // 2. 返回下一个工作单元
     if (fiber.child) {
       return fiber.child;
     }
-    
+  
     let nextFiber = fiber;
     while (nextFiber) {
       if (nextFiber.sibling) {
@@ -194,7 +200,7 @@ class FiberReconciler {
       }
       nextFiber = nextFiber.parent;
     }
-    
+  
     return null;
   }
 }
@@ -278,17 +284,17 @@ const appFiber = {
     type: 'div',
     tag: HostComponent,
     stateNode: divDOMNode,
-    
+  
     props: {
       className: 'app',
       children: [...]
     },
-    
+  
     child: {
       type: 'h1',
       tag: HostComponent,
       stateNode: h1DOMNode,
-      
+    
       sibling: {
         type: 'button',
         tag: HostComponent,
@@ -580,7 +586,7 @@ function createWorkInProgress(current, pendingProps) {
     workInProgress.elementType = current.elementType;
     workInProgress.type = current.type;
     workInProgress.stateNode = current.stateNode;
-    
+  
     // 建立双向连接
     workInProgress.alternate = current;
     current.alternate = workInProgress;
@@ -588,7 +594,7 @@ function createWorkInProgress(current, pendingProps) {
     // 复用现有Fiber
     workInProgress.pendingProps = pendingProps;
     workInProgress.type = current.type;
-    
+  
     // 重置副作用
     workInProgress.flags = NoFlags;
     workInProgress.subtreeFlags = NoFlags;
@@ -743,17 +749,17 @@ function completeUnitOfWork(unitOfWork) {
   do {
     const current = completedWork.alternate;
     const returnFiber = completedWork.return;
-    
+  
     // 完成当前Fiber
     completeWork(current, completedWork, renderLanes);
-    
+  
     const siblingFiber = completedWork.sibling;
     if (siblingFiber !== null) {
       // 有兄弟节点，处理兄弟
       workInProgress = siblingFiber;
       return;
     }
-    
+  
     // 回到父节点
     completedWork = returnFiber;
     workInProgress = completedWork;
@@ -789,12 +795,12 @@ function commitRoot(root) {
 function commitBeforeMutationEffects(finishedWork) {
   while (nextEffect !== null) {
     const fiber = nextEffect;
-    
+  
     // 处理Snapshot effect（getSnapshotBeforeUpdate）
     if ((fiber.flags & Snapshot) !== NoFlags) {
       commitBeforeMutationEffectOnFiber(fiber);
     }
-    
+  
     nextEffect = nextEffect.nextEffect;
   }
 }
@@ -804,12 +810,12 @@ function commitMutationEffects(finishedWork, root) {
   while (nextEffect !== null) {
     const fiber = nextEffect;
     const flags = fiber.flags;
-    
+  
     // 重置文本内容
     if (flags & ContentReset) {
       commitResetTextContent(fiber);
     }
-    
+  
     // 处理Ref
     if (flags & Ref) {
       const current = fiber.alternate;
@@ -817,10 +823,10 @@ function commitMutationEffects(finishedWork, root) {
         commitDetachRef(current);
       }
     }
-    
+  
     // 主要DOM操作
     const primaryFlags = flags & (Placement | Update | Deletion | Hydrating);
-    
+  
     switch (primaryFlags) {
       case Placement: {
         commitPlacement(fiber);
@@ -838,7 +844,7 @@ function commitMutationEffects(finishedWork, root) {
       }
       // ...
     }
-    
+  
     nextEffect = nextEffect.nextEffect;
   }
 }
@@ -848,17 +854,17 @@ function commitLayoutEffects(finishedWork, lanes) {
   while (nextEffect !== null) {
     const fiber = nextEffect;
     const flags = fiber.flags;
-    
+  
     // 处理Layout effect
     if (flags & (Update | Callback)) {
       commitLayoutEffectOnFiber(fiber, lanes);
     }
-    
+  
     // 绑定Ref
     if (flags & Ref) {
       commitAttachRef(fiber);
     }
-    
+  
     nextEffect = nextEffect.nextEffect;
   }
 }
@@ -935,18 +941,18 @@ function iterativeFiberTraversal(root) {
   while (true) {
     // 处理当前节点
     performWork(node);
-    
+  
     // 如果有子节点，进入子节点
     if (node.child) {
       node = node.child;
       continue;
     }
-    
+  
     // 没有子节点，完成当前节点
     if (node === root) {
       return;  // 遍历完成
     }
-    
+  
     // 找下一个兄弟节点或返回父节点
     while (!node.sibling) {
       if (!node.return || node.return === root) {
@@ -954,7 +960,7 @@ function iterativeFiberTraversal(root) {
       }
       node = node.return;
     }
-    
+  
     node = node.sibling;
   }
 }
@@ -1041,12 +1047,12 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
   let pendingQueue = queue.shared.pending;
   if (pendingQueue !== null) {
     queue.shared.pending = null;
-    
+  
     // 将pending队列接入base队列
     const lastPendingUpdate = pendingQueue;
     const firstPendingUpdate = lastPendingUpdate.next;
     lastPendingUpdate.next = null;
-    
+  
     if (lastBaseUpdate === null) {
       firstBaseUpdate = firstPendingUpdate;
     } else {
@@ -1061,11 +1067,11 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
     let newBaseState = null;
     let newFirstBaseUpdate = null;
     let newLastBaseUpdate = null;
-    
+  
     let update = firstBaseUpdate;
     do {
       const updateLane = update.lane;
-      
+    
       if (!isSubsetOfLanes(renderLanes, updateLane)) {
         // 优先级不够，跳过此更新
         const clone = {
@@ -1075,7 +1081,7 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
           callback: update.callback,
           next: null
         };
-        
+      
         if (newLastBaseUpdate === null) {
           newFirstBaseUpdate = newLastBaseUpdate = clone;
           newBaseState = newState;
@@ -1094,7 +1100,7 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
           };
           newLastBaseUpdate = newLastBaseUpdate.next = clone;
         }
-        
+      
         // 计算新state
         newState = getStateFromUpdate(
           workInProgress,
@@ -1104,7 +1110,7 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
           props,
           instance
         );
-        
+      
         // 处理callback
         const callback = update.callback;
         if (callback !== null) {
@@ -1117,22 +1123,22 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
           }
         }
       }
-      
+    
       update = update.next;
       if (update === null) {
         break;
       }
     } while (true);
-    
+  
     // 更新队列
     if (newLastBaseUpdate === null) {
       newBaseState = newState;
     }
-    
+  
     queue.baseState = newBaseState;
     queue.firstBaseUpdate = newFirstBaseUpdate;
     queue.lastBaseUpdate = newLastBaseUpdate;
-    
+  
     workInProgress.memoizedState = newState;
   }
 }
@@ -1358,13 +1364,13 @@ function updateWorkInProgressHook() {
       queue: nextCurrentHook.queue,
       next: null
     };
-    
+  
     if (workInProgressHook === null) {
       currentlyRenderingFiber.memoizedState = workInProgressHook = newHook;
     } else {
       workInProgressHook = workInProgressHook.next = newHook;
     }
-    
+  
     currentHook = nextCurrentHook;
   }
   
@@ -1388,7 +1394,7 @@ interface Effect {
 const fiber = {
   updateQueue: {
     lastEffect: effect3,  // 指向最后一个Effect
-    
+  
     // Effect环形链表
     // effect1 -> effect2 -> effect3 -> effect1
   }
@@ -1417,7 +1423,7 @@ function updateEffect(create, deps) {
   if (currentHook !== null) {
     const prevEffect = currentHook.memoizedState;
     destroy = prevEffect.destroy;
-    
+  
     if (nextDeps !== null) {
       const prevDeps = prevEffect.deps;
       if (areHookInputsEqual(nextDeps, prevDeps)) {
@@ -1490,7 +1496,7 @@ function commitPassiveMountEffects(finishedWork) {
   if (lastEffect !== null) {
     const firstEffect = lastEffect.next;
     let effect = firstEffect;
-    
+  
     do {
       if ((effect.tag & HookPassive) !== NoFlags && 
           (effect.tag & HookHasEffect) !== NoFlags) {
@@ -1521,7 +1527,7 @@ function shouldYield() {
       // 需要绘制或有用户输入
       return true;
     }
-    
+  
     // 还有时间可以继续工作
     return currentTime >= maxYieldInterval;
   }
@@ -1580,7 +1586,7 @@ function performConcurrentWorkOnRoot(root) {
     const finishedWork = root.current.alternate;
     root.finishedWork = finishedWork;
     root.finishedLanes = lanes;
-    
+  
     finishConcurrentRender(root, exitStatus, lanes);
   }
   
@@ -1667,7 +1673,7 @@ function ensureRootIsScheduled(root, currentTime) {
     const schedulerPriorityLevel = lanePriorityToSchedulerPriority(
       newCallbackPriority
     );
-    
+  
     newCallbackNode = scheduleCallback(
       schedulerPriorityLevel,
       performConcurrentWorkOnRoot.bind(null, root)
@@ -1719,9 +1725,9 @@ function markStarvedLanesAsExpired(root, currentTime) {
   while (lanes > 0) {
     const index = pickArbitraryLaneIndex(lanes);
     const lane = 1 << index;
-    
+  
     const expirationTime = expirationTimes[index];
-    
+  
     if (expirationTime === NoTimestamp) {
       // 设置过期时间
       if ((lane & suspendedLanes) === NoLanes || 
@@ -1732,7 +1738,7 @@ function markStarvedLanesAsExpired(root, currentTime) {
       // 已过期，升级为过期lane
       root.expiredLanes |= lane;
     }
-    
+  
     lanes &= ~lane;
   }
 }
@@ -1869,29 +1875,29 @@ function reconcileChildrenArray(
     } else {
       nextOldFiber = oldFiber.sibling;
     }
-    
+  
     const newFiber = updateSlot(
       returnFiber,
       oldFiber,
       newChildren[newIdx],
       lanes
     );
-    
+  
     if (newFiber === null) {
       if (oldFiber === null) {
         oldFiber = nextOldFiber;
       }
       break;
     }
-    
+  
     if (shouldTrackSideEffects) {
       if (oldFiber && newFiber.alternate === null) {
         deleteChild(returnFiber, oldFiber);
       }
     }
-    
+  
     lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
-    
+  
     if (previousNewFiber === null) {
       resultingFirstChild = newFiber;
     } else {
@@ -1912,9 +1918,9 @@ function reconcileChildrenArray(
     for (; newIdx < newChildren.length; newIdx++) {
       const newFiber = createChild(returnFiber, newChildren[newIdx], lanes);
       if (newFiber === null) continue;
-      
+    
       lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
-      
+    
       if (previousNewFiber === null) {
         resultingFirstChild = newFiber;
       } else {
@@ -1937,7 +1943,7 @@ function reconcileChildrenArray(
       newChildren[newIdx],
       lanes
     );
-    
+  
     if (newFiber !== null) {
       if (shouldTrackSideEffects) {
         if (newFiber.alternate !== null) {
@@ -1946,9 +1952,9 @@ function reconcileChildrenArray(
           );
         }
       }
-      
+    
       lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
-      
+    
       if (previousNewFiber === null) {
         resultingFirstChild = newFiber;
       } else {
@@ -1982,7 +1988,7 @@ function batchedUpdates(fn) {
     return fn();
   } finally {
     isBatchingUpdates = prevIsBatchingUpdates;
-    
+  
     if (!isBatchingUpdates) {
       flushSyncCallbackQueue();
     }
@@ -2162,7 +2168,7 @@ function SearchResults() {
   
   const handleChange = (e) => {
     setQuery(e.target.value);  // 紧急：立即更新输入框
-    
+  
     startTransition(() => {
       // 非紧急：可被打断的搜索
       setResults(search(e.target.value));
@@ -2212,7 +2218,7 @@ function ThemeProvider({ children }) {
 
 ### Q1: Fiber如何实现可中断的渲染？
 
-**A:** Fiber将渲染工作分解为小的工作单元，每完成一个单元就检查是否需要让出控制权。通过`requestIdleCallback`或`MessageChannel`实现帧间调度。
+**A:** Fiber将渲染工作分解为小的工作单元，每完成一个单元就检查是否需要让出控制权。通过 `requestIdleCallback`或 `MessageChannel`实现帧间调度。
 
 ### Q2: 为什么需要双缓冲技术？
 
@@ -2228,7 +2234,7 @@ function ThemeProvider({ children }) {
 
 ### Q5: Fiber如何处理错误边界？
 
-**A:** Fiber在catch错误后会查找最近的错误边界组件，执行其`getDerivedStateFromError`和`componentDidCatch`，然后从该点重新渲染。
+**A:** Fiber在catch错误后会查找最近的错误边界组件，执行其 `getDerivedStateFromError`和 `componentDidCatch`，然后从该点重新渲染。
 
 ### Q6: 如何优化Fiber性能？
 
@@ -2240,7 +2246,7 @@ function ThemeProvider({ children }) {
 
 ### Q8: 如何调试Fiber问题？
 
-**A:** 使用React DevTools的Profiler、在组件上添加Profiler API收集性能数据、检查组件的`_reactInternals`属性查看Fiber节点。
+**A:** 使用React DevTools的Profiler、在组件上添加Profiler API收集性能数据、检查组件的 `_reactInternals`属性查看Fiber节点。
 
 ### Q9: Concurrent Mode对Fiber有什么影响？
 
@@ -2299,4 +2305,3 @@ function ThemeProvider({ children }) {
 ```
 
 Fiber架构是React实现高性能、可中断渲染的基石，深入理解Fiber有助于编写更高效的React应用。
-
