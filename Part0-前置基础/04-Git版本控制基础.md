@@ -914,7 +914,7 @@ Host company
 
 创建 `.gitignore`:
 
-```gitignore
+```bash
 # 依赖
 node_modules/
 /.pnp
