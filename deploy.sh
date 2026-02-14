@@ -46,7 +46,7 @@ show_help() {
 # 构建生产镜像
 build_image() {
     echo -e "${YELLOW}正在构建生产镜像...${NC}"
-    docker-compose build build
+    docker-compose run builder
     echo -e "${GREEN}构建完成！${NC}"
 }
 

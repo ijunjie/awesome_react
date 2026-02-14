@@ -194,7 +194,7 @@ chmod +x deploy.sh
 | `docker-compose up dev` | 开发服务器（热更新） | http://localhost:5173 |
 | `docker-compose up web` | 生产服务器（稳定版本） | http://localhost:80 |
 | `docker-compose up preview` | 预览服务器（测试构建） | http://localhost:4173 |
-| `docker-compose build build` | 仅构建生产镜像 | - |
+| `docker-compose run builder` | 仅构建生产镜像 | - |
 | `docker-compose down` | 停止所有服务 | - |
 
 ### 配置说明
