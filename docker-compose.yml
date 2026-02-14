@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # 开发环境服务
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.vitepress/cache
+    command: pnpm run docs:dev --host
+    environment:
+      - NODE_ENV=development
+
+  # 生产构建服务
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: pnpm run docs:build
+
+  # 生产环境服务
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    restart: always
+    environment:
+      - NODE_ENV=production
+
+  # 预览服务（用于测试构建结果）
+  preview:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    ports:
+      - "4173:4173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: pnpm run docs:preview --host
+    environment:
+      - NODE_ENV=production

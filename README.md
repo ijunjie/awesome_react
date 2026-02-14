@@ -142,6 +142,67 @@ cd awesome_react
 code .
 ```
 
+## 🐳 容器化部署
+
+本项目提供完整的 Docker 容器化部署方案，支持开发、预览和生产环境。
+
+### 环境要求
+- Docker 20.10+ [安装指南](https://docs.docker.com/get-docker/)
+- Docker Compose 1.29+ [安装指南](https://docs.docker.com/compose/install/)
+
+### 快速部署
+
+```bash
+# 启动生产服务器（端口 80）
+docker-compose up -d web
+
+# 启动开发服务器（端口 5173）
+docker-compose up dev
+
+# 启动预览服务器（端口 4173）
+docker-compose up preview
+```
+
+### 使用部署脚本
+
+本项目提供了便捷的部署脚本：
+
+```bash
+# 赋予执行权限
+chmod +x deploy.sh
+
+# 显示帮助信息
+./deploy.sh help
+
+# 启动开发服务器
+./deploy.sh dev
+
+# 启动生产服务器
+./deploy.sh up
+
+# 停止所有服务
+./deploy.sh down
+
+# 清理所有资源
+./deploy.sh clean
+```
+
+### 部署命令说明
+
+| 命令 | 描述 | 访问地址 |
+|------|------|----------|
+| `docker-compose up dev` | 开发服务器（热更新） | http://localhost:5173 |
+| `docker-compose up web` | 生产服务器（稳定版本） | http://localhost:80 |
+| `docker-compose up preview` | 预览服务器（测试构建） | http://localhost:4173 |
+| `docker-compose build build` | 仅构建生产镜像 | - |
+| `docker-compose down` | 停止所有服务 | - |
+
+### 配置说明
+
+- **Nginx 配置**：`nginx.conf` 文件包含完整的生产环境配置
+- **Docker 构建**：`Dockerfile` 使用多阶段构建优化镜像大小
+- **服务定义**：`docker-compose.yml` 定义了完整的服务架构
+
 ### 学习建议
 1. 按顺序学习各个部分
 2. 跟随代码示例动手实践
