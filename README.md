@@ -154,13 +154,13 @@ code .
 
 ```bash
 # 启动生产服务器（端口 80）
-docker-compose up -d web
+docker compose up -d web
 
 # 启动开发服务器（端口 5173）
-docker-compose up dev
+docker compose up dev
 
 # 启动预览服务器（端口 4173）
-docker-compose up preview
+docker compose up preview
 ```
 
 ### 使用部署脚本
@@ -191,11 +191,11 @@ chmod +x deploy.sh
 
 | 命令 | 描述 | 访问地址 |
 |------|------|----------|
-| `docker-compose up dev` | 开发服务器（热更新） | http://localhost:5173 |
-| `docker-compose up web` | 生产服务器（稳定版本） | http://localhost:80 |
-| `docker-compose up preview` | 预览服务器（测试构建） | http://localhost:4173 |
-| `docker-compose run builder` | 仅构建生产镜像 | - |
-| `docker-compose down` | 停止所有服务 | - |
+| `docker compose up dev` | 开发服务器（热更新） | http://localhost:5173 |
+| `docker compose up web` | 生产服务器（稳定版本） | http://localhost:80 |
+| `docker compose up preview` | 预览服务器（测试构建） | http://localhost:4173 |
+| `docker compose run builder` | 仅构建生产镜像 | - |
+| `docker compose down` | 停止所有服务 | - |
 
 ### 配置说明
 

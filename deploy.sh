@@ -19,10 +19,10 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# 检查Docker Compose是否安装
-if ! command -v docker-compose &> /dev/null; then
-    echo -e "${RED}错误: Docker Compose未安装！${NC}"
-    echo "请先安装Docker Compose: https://docs.docker.com/compose/install/"
+# 检查Docker Compose功能是否可用
+if ! docker compose version &> /dev/null; then
+    echo -e "${RED}错误: Docker Compose功能不可用！${NC}"
+    echo "请确保安装了支持Compose的Docker版本: https://docs.docker.com/get-docker/"
     exit 1
 fi
 
@@ -46,7 +46,7 @@ show_help() {
 # 构建生产镜像
 build_image() {
     echo -e "${YELLOW}正在构建生产镜像...${NC}"
-    docker-compose run builder
+    docker compose run builder
     echo -e "${GREEN}构建完成！${NC}"
 }
 
@@ -54,20 +54,20 @@ build_image() {
 start_dev() {
     echo -e "${YELLOW}正在启动开发服务器...${NC}"
     echo -e "${GREEN}开发服务器将在 http://localhost:5173 启动${NC}"
-    docker-compose up dev
+    docker compose up dev
 }
 
 # 启动生产服务器
 start_prod() {
     echo -e "${YELLOW}正在启动生产服务器...${NC}"
     echo -e "${GREEN}生产服务器将在 http://localhost:80 启动${NC}"
-    docker-compose up -d web
+    docker compose up -d web
 }
 
 # 停止所有服务
 stop_all() {
     echo -e "${YELLOW}正在停止所有服务...${NC}"
-    docker-compose down
+    docker compose down
     echo -e "${GREEN}所有服务已停止！${NC}"
 }
 
@@ -75,13 +75,13 @@ stop_all() {
 start_preview() {
     echo -e "${YELLOW}正在启动预览服务器...${NC}"
     echo -e "${GREEN}预览服务器将在 http://localhost:4173 启动${NC}"
-    docker-compose up preview
+    docker compose up preview
 }
 
 # 清理所有资源
 clean_resources() {
     echo -e "${YELLOW}正在清理所有资源...${NC}"
-    docker-compose down -v --rmi all --remove-orphans
+    docker compose down -v --rmi all --remove-orphans
     docker system prune -f
     echo -e "${GREEN}资源清理完成！${NC}"
 }
@@ -89,7 +89,7 @@ clean_resources() {
 # 显示服务状态
 show_status() {
     echo -e "${YELLOW}正在检查服务状态...${NC}"
-    docker-compose ps
+    docker compose ps
     echo ""
     echo -e "${GREEN}镜像列表:${NC}"
     docker images | grep react-19-guide
