@@ -10,6 +10,12 @@ COPY package.json pnpm-lock.yaml ./
 # 安装pnpm
 RUN npm install -g pnpm
 
+# 配置pnpm镜像源（解决网络问题）
+RUN pnpm config set registry https://registry.npmmirror.com && \
+    pnpm config set @types:registry https://registry.npmmirror.com && \
+    pnpm config set electron_mirror https://npmmirror.com/mirrors/electron/ && \
+    pnpm config set electron_builder_binaries_mirror https://npmmirror.com/mirrors/electron-builder-binaries/
+
 # 安装依赖
 RUN pnpm install
 
